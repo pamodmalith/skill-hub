@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
-<%@include file="menu.jsp"%>
+<jsp:include page="menu.jsp"/>
 
 <main class="main container">
     <div class="page-header">
