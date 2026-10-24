@@ -7,15 +7,12 @@ import com.skillhub.model.User;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class DataStore {
     private final Map<String, User> users = new ConcurrentHashMap<>();
     private final Map<Integer, Course> courses = new ConcurrentHashMap<>();
-    private final List<Enrollment> enrollments = new CopyOnWriteArrayList<>();
-    private final AtomicInteger nextCourseId = new AtomicInteger(1);
-    private final AtomicInteger nextUserId = new AtomicInteger(1);
+    private final List<Enrollment> enrollments = new ArrayList<>();
+    private int nextCourseId = 1;
 
     public DataStore() {
         // Sample data will be loaded by AppContextListener
@@ -62,7 +59,7 @@ public class DataStore {
 
     // Course methods
     public synchronized int addCourse(String title, String category, String trainerUsername) {
-        int id = nextCourseId.getAndIncrement();
+        int id = nextCourseId++;
         Course course = new Course(id, title, category, trainerUsername);
         courses.put(id, course);
         return id;
