@@ -29,7 +29,7 @@ public class DashboardServlet extends HttpServlet {
             resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/login"));
             return;
         }
-        
+
         User user = (User) session.getAttribute("loggedUser");
         if (user == null) {
             resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/login"));
@@ -41,14 +41,10 @@ public class DashboardServlet extends HttpServlet {
             throw new ServletException("DataStore not initialized - AppContextListener may not have run");
         }
 
-        String academyName = getServletContext().getInitParameter("academyName");
-        req.setAttribute("academyName", academyName);
-
         // Active session count from SessionListener (stored as AtomicInteger)
-        java.util.concurrent.atomic.AtomicInteger activeSessionsCounter = 
+        java.util.concurrent.atomic.AtomicInteger activeSessionsCounter =
             (java.util.concurrent.atomic.AtomicInteger) getServletContext().getAttribute("activeSessions");
         int activeSessions = activeSessionsCounter != null ? activeSessionsCounter.get() : 0;
-        req.setAttribute("activeSessions", activeSessions);
 
         switch (user.getRole()) {
             case STUDENT:

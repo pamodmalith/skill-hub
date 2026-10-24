@@ -9,11 +9,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - <%= request.getAttribute("academyName") %></title>
+    <title>Dashboard - <%= application.getInitParameter("academyName") %></title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
-<jsp:include page="menu.jsp"/>
+<%@include file="menu.jsp"%>
 
 <main class="main container">
     <div class="page-header">
@@ -146,7 +146,7 @@
 </main>
 
 <footer class="footer container">
-    <p>&copy; 2026 <%= request.getAttribute("academyName") %>. All rights reserved.</p>
+    <p>&copy; 2026 <%= application.getInitParameter("academyName") %>. All rights reserved.</p>
 </footer>
 </body>
 </html>

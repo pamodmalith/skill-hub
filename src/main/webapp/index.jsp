@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= request.getAttribute("academyName") %></title>
+    <title><%= application.getInitParameter("academyName") %></title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 <div class="auth-page">
     <div class="auth-card" style="text-align: center;">
-        <h1 class="auth-title" style="color: #2c7be5;"><%= request.getAttribute("academyName") %></h1>
+        <h1 class="auth-title" style="color: #2c7be5;"><%= application.getInitParameter("academyName") %></h1>
         <p class="auth-subtitle">Professional Training Portal</p>
 
         <div style="margin: 32px 0; padding: 24px; background: #f9fafb; border-radius: 8px;">

@@ -19,9 +19,6 @@ public class ProfileServlet extends HttpServlet {
             return;
         }
 
-        String academyName = getServletContext().getInitParameter("academyName");
-        req.setAttribute("academyName", academyName);
-
         req.getRequestDispatcher("/WEB-INF/views/profile.jsp").forward(req, resp);
     }
 }
