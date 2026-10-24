@@ -7,6 +7,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 public class AuthFilter implements Filter {
@@ -23,6 +24,12 @@ public class AuthFilter implements Filter {
         // Public paths that don't require authentication
         if (isPublicPath(path)) {
             chain.doFilter(request, response);
+            return;
+        }
+
+        // Unknown URLs should show 404 instead of redirecting to login
+        if (!isProtectedPath(path)) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
@@ -58,5 +65,14 @@ public class AuthFilter implements Filter {
                 || path.equals("/register")
                 || path.startsWith("/css/")
                 || path.equals("/favicon.ico");
+    }
+
+    private boolean isProtectedPath(String path) {
+        return path.equals("/dashboard")
+                || path.equals("/courses")
+                || path.equals("/profile")
+                || path.equals("/logout")
+                || path.equals("/enroll")
+                || path.equals("/admin/add-course");
     }
 }

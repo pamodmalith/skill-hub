@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 @WebServlet("/login")
@@ -65,7 +66,7 @@ public class LoginServlet extends HttpServlet {
         Cookie c = new Cookie("rememberedUser", user.getUsername());
         c.setPath(req.getContextPath());
         c.setHttpOnly(true);
-        c.setMaxAge(remember != null ? 7 * 24 * 60 * 60 : 0);
+        c.setMaxAge(remember != null ? 60 * 60 * 24 * 7 : 0);
         resp.addCookie(c);
 
         resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/dashboard"));

@@ -129,12 +129,6 @@ public class DataStore {
         return enrollments.size();
     }
 
-    // Stats for admin dashboard
-    public int getActiveSessionCount() {
-        // This will be set by SessionListener
-        return 0; // Placeholder, actual value from ServletContext attribute
-    }
-
     // Initialize sample data
     public void loadSampleData() {
         // Admin
