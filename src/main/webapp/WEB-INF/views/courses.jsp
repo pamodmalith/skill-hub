@@ -1,12 +1,17 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ page import="com.skillhub.model.Course, com.skillhub.model.Role, com.skillhub.model.User, java.util.List, java.util.Map" %>
+<%
+    List<Course> courses       = (List<Course>) request.getAttribute("courses");
+    Map<Integer, User> trainerMap = (Map<Integer, User>) request.getAttribute("trainerMap");
+    Role userRole              = (Role) request.getAttribute("userRole");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Courses - ${academyName}</title>
-    <link rel="stylesheet" href="<c:url value='/css/style.css'/>">
+    <title>Courses - <%= request.getAttribute("academyName") %></title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 <jsp:include page="menu.jsp"/>
@@ -17,16 +22,15 @@
         <p class="page-subtitle">Browse and enroll in our training programs</p>
     </div>
 
-    <c:if test="${param.msg == 'added'}">
+    <% if ("added".equals(request.getParameter("msg"))) { %>
         <div class="alert alert-success">Course added successfully!</div>
-    </c:if>
+    <% } %>
 
     <div class="card">
         <div class="card-body">
-            <c:if test="${empty courses}">
+            <% if (courses == null || courses.isEmpty()) { %>
                 <p style="color: #666;">No courses available at the moment.</p>
-            </c:if>
-            <c:if test="${not empty courses}">
+            <% } else { %>
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -34,48 +38,45 @@
                             <th>Title</th>
                             <th>Category</th>
                             <th>Trainer</th>
-                            <c:if test="${userRole == 'STUDENT'}"><th>Action</th></c:if>
+                            <% if (userRole == Role.STUDENT) { %><th>Action</th><% } %>
                         </tr>
                         </thead>
                         <tbody>
-                        <c:forEach items="${courses}" var="course">
+                        <% for (Course course : courses) {
+                               User trainer = trainerMap != null ? trainerMap.get(course.getId()) : null;
+                        %>
                             <tr>
-                                <td><c:out value="${course.title}"/></td>
-                                <td><c:out value="${course.category}"/></td>
-                                <td>
-                                    <c:set var="trainer" value="${trainerMap[course.id]}"/>
-                                    <c:if test="${trainer != null}">
-                                        <c:out value="${trainer.fullName}"/>
-                                    </c:if>
-                                </td>
-                                <c:if test="${userRole == 'STUDENT'}">
+                                <td><%= course.getTitle() %></td>
+                                <td><%= course.getCategory() %></td>
+                                <td><%= trainer != null ? trainer.getFullName() : "" %></td>
+                                <% if (userRole == Role.STUDENT) { %>
                                     <td>
                                         <div class="course-actions">
-                                            <form method="post" action="<c:url value='/enroll'/>">
-                                                <input type="hidden" name="courseId" value="${course.id}"/>
+                                            <form method="post" action="<%= request.getContextPath() %>/enroll">
+                                                <input type="hidden" name="courseId" value="<%= course.getId() %>"/>
                                                 <button type="submit" class="btn btn-primary btn-sm">Enrol</button>
                                             </form>
                                         </div>
                                     </td>
-                                </c:if>
+                                <% } %>
                             </tr>
-                        </c:forEach>
+                        <% } %>
                         </tbody>
                     </table>
                 </div>
-            </c:if>
+            <% } %>
         </div>
     </div>
 
-    <c:if test="${userRole == 'ADMIN'}">
+    <% if (userRole == Role.ADMIN) { %>
         <div style="margin-top: 24px; text-align: right;">
-            <a href="<c:url value='/admin/add-course'/>" class="btn btn-primary">Add New Course</a>
+            <a href="<%= request.getContextPath() %>/admin/add-course" class="btn btn-primary">Add New Course</a>
         </div>
-    </c:if>
+    <% } %>
 </main>
 
 <footer class="footer container">
-    <p>&copy; 2026 ${academyName}. All rights reserved.</p>
+    <p>&copy; 2026 <%= request.getAttribute("academyName") %>. All rights reserved.</p>
 </footer>
 </body>
 </html>

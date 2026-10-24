@@ -1,12 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" session="false" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - ${academyName}</title>
-    <link rel="stylesheet" href="<c:url value='/css/style.css'/>">
+    <title>Login - <%= request.getAttribute("academyName") %></title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 <div class="auth-page">
@@ -14,22 +13,23 @@
         <h1 class="auth-title">Welcome Back</h1>
         <p class="auth-subtitle">Sign in to your SkillHub account</p>
 
-        <c:if test="${param.msg == 'loggedout'}">
+        <% if ("loggedout".equals(request.getParameter("msg"))) { %>
             <div class="alert alert-info">You have been logged out successfully.</div>
-        </c:if>
-        <c:if test="${param.msg == 'registered'}">
+        <% } %>
+        <% if ("registered".equals(request.getParameter("msg"))) { %>
             <div class="alert alert-success">Registration successful! Please log in.</div>
-        </c:if>
+        <% } %>
 
-        <c:if test="${not empty error}">
-            <div class="alert alert-error">${error}</div>
-        </c:if>
+        <% if (request.getAttribute("error") != null) { %>
+            <div class="alert alert-error"><%= request.getAttribute("error") %></div>
+        <% } %>
 
-        <form method="post" action="<c:url value='/login'/>">
+        <form method="post" action="<%= request.getContextPath() %>/login">
             <div class="form-group">
                 <label class="form-label" for="username">Username</label>
                 <input type="text" id="username" name="username" class="form-control"
-                       value="${rememberedUser}" required autocomplete="username">
+                       value="<%= request.getAttribute("rememberedUser") != null ? request.getAttribute("rememberedUser") : "" %>"
+                       required autocomplete="username">
             </div>
 
             <div class="form-group">
@@ -40,8 +40,9 @@
 
             <div class="form-group">
                 <div class="form-check">
+                    <% String rememberedUser = (String) request.getAttribute("rememberedUser"); %>
                     <input type="checkbox" id="remember" name="remember" class="form-check-input"
-                           ${rememberedUser != '' ? 'checked' : ''}>
+                           <%= (rememberedUser != null && !rememberedUser.isEmpty()) ? "checked" : "" %>>
                     <label class="form-label" for="remember" style="margin-bottom: 0; font-weight: 400;">Remember my username</label>
                 </div>
             </div>
@@ -50,7 +51,7 @@
         </form>
 
         <div class="auth-footer">
-            <p>Don't have an account? <a href="<c:url value='/register'/>">Register as a Student</a></p>
+            <p>Don't have an account? <a href="<%= request.getContextPath() %>/register">Register as a Student</a></p>
         </div>
 
         <div class="auth-footer" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #eef2f7; font-size: 0.8rem; color: #999;">

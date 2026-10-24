@@ -1,25 +1,24 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" session="false" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${academyName}</title>
-    <link rel="stylesheet" href="<c:url value='/css/style.css'/>">
+    <title><%= request.getAttribute("academyName") %></title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 <div class="auth-page">
     <div class="auth-card" style="text-align: center;">
-        <h1 class="auth-title" style="color: #2c7be5;">${academyName}</h1>
+        <h1 class="auth-title" style="color: #2c7be5;"><%= request.getAttribute("academyName") %></h1>
         <p class="auth-subtitle">Professional Training Portal</p>
 
         <div style="margin: 32px 0; padding: 24px; background: #f9fafb; border-radius: 8px;">
             <p style="margin-bottom: 16px;">Welcome to the SkillHub Training Portal.</p>
             <p style="margin-bottom: 24px;">Please sign in to access your dashboard, or register as a new student.</p>
             <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                <a href="<c:url value='/login'/>" class="btn btn-primary" style="min-width: 140px;">Sign In</a>
-                <a href="<c:url value='/register'/>" class="btn btn-secondary" style="min-width: 140px;">Register</a>
+                <a href="<%= request.getContextPath() %>/login" class="btn btn-primary" style="min-width: 140px;">Sign In</a>
+                <a href="<%= request.getContextPath() %>/register" class="btn btn-secondary" style="min-width: 140px;">Register</a>
             </div>
         </div>
 

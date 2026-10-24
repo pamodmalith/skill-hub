@@ -1,12 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ page import="com.skillhub.model.User, java.util.List" %>
+<%
+    List<User> trainers = (List<User>) request.getAttribute("trainers");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Course - ${academyName}</title>
-    <link rel="stylesheet" href="<c:url value='/css/style.css'/>">
+    <title>Add Course - <%= request.getAttribute("academyName") %></title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 <jsp:include page="menu.jsp"/>
@@ -17,13 +20,13 @@
         <p class="page-subtitle">Create a new training course and assign a trainer</p>
     </div>
 
-    <c:if test="${not empty error}">
-        <div class="alert alert-error">${error}</div>
-    </c:if>
+    <% if (request.getAttribute("error") != null) { %>
+        <div class="alert alert-error"><%= request.getAttribute("error") %></div>
+    <% } %>
 
     <div class="card">
         <div class="card-body">
-            <form method="post" action="<c:url value='/admin/add-course'/>">
+            <form method="post" action="<%= request.getContextPath() %>/admin/add-course">
                 <div class="form-group">
                     <label class="form-label" for="title">Course Title</label>
                     <input type="text" id="title" name="title" class="form-control"
@@ -40,15 +43,18 @@
                     <label class="form-label" for="trainerUsername">Trainer</label>
                     <select id="trainerUsername" name="trainerUsername" class="form-control" required>
                         <option value="">Select a trainer</option>
-                        <c:forEach items="${trainers}" var="trainer">
-                            <option value="${trainer.username}"><c:out value="${trainer.fullName}"/> (<c:out value="${trainer.username}"/>)</option>
-                        </c:forEach>
+                        <% if (trainers != null) {
+                               for (User trainer : trainers) { %>
+                            <option value="<%= trainer.getUsername() %>"><%= trainer.getFullName() %> (<%= trainer.getUsername() %>)</option>
+                        <%     }
+                           } %>
                     </select>
                 </div>
 
                 <div style="display: flex; gap: 12px;">
                     <button type="submit" class="btn btn-primary">Create Course</button>
-                    <a href="<c:url value='/courses'/>" class="btn btn-secondary" style="padding-top: 10px; padding-bottom: 10px;">Cancel</a>
+                    <a href="<%= request.getContextPath() %>/courses" class="btn btn-secondary"
+                       style="padding-top: 10px; padding-bottom: 10px;">Cancel</a>
                 </div>
             </form>
         </div>
@@ -56,7 +62,7 @@
 </main>
 
 <footer class="footer container">
-    <p>&copy; 2026 ${academyName}. All rights reserved.</p>
+    <p>&copy; 2026 <%= request.getAttribute("academyName") %>. All rights reserved.</p>
 </footer>
 </body>
 </html>

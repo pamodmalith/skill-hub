@@ -1,12 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" session="false" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - ${academyName}</title>
-    <link rel="stylesheet" href="<c:url value='/css/style.css'/>">
+    <title>Register - <%= request.getAttribute("academyName") %></title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
 <body>
 <div class="auth-page">
@@ -14,11 +13,11 @@
         <h1 class="auth-title">Create Account</h1>
         <p class="auth-subtitle">Register as a student to start learning</p>
 
-        <c:if test="${not empty error}">
-            <div class="alert alert-error">${error}</div>
-        </c:if>
+        <% if (request.getAttribute("error") != null) { %>
+            <div class="alert alert-error"><%= request.getAttribute("error") %></div>
+        <% } %>
 
-        <form method="post" action="<c:url value='/register'/>">
+        <form method="post" action="<%= request.getContextPath() %>/register">
             <div class="form-group">
                 <label class="form-label" for="username">Username</label>
                 <input type="text" id="username" name="username" class="form-control"
@@ -53,7 +52,7 @@
         </form>
 
         <div class="auth-footer">
-            <p>Already have an account? <a href="<c:url value='/login'/>">Sign In</a></p>
+            <p>Already have an account? <a href="<%= request.getContextPath() %>/login">Sign In</a></p>
         </div>
     </div>
 </div>
