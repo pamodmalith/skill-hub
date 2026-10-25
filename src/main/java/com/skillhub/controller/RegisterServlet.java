@@ -57,6 +57,6 @@ public class RegisterServlet extends HttpServlet {
         User user = new User(username.trim(), password, fullName.trim(), email.trim(), Role.STUDENT);
         store.addUser(user);
 
-        resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/login?msg=registered"));
+        resp.sendRedirect(req.getContextPath() + "/login?msg=registered");
     }
 }

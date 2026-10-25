@@ -88,7 +88,7 @@ All three actors are "registered users" who share common functions (login, logou
 | A4 | Only students can self-register. Admin and trainer accounts are created in the startup data. |
 | A5 | Each course is taught by exactly one trainer. |
 | A6 | The number of concurrent users is small, so in-memory collections are sufficient. |
-| A7 | The browser accepts cookies (URL rewriting is supported only as the container's fallback). |
+| A7 | The browser accepts cookies. Session tracking is cookie-only (`<tracking-mode>COOKIE</tracking-mode>`). |
 | A8 | Attendance records mentioned in the scenario are outside the scope of this prototype. |
 
 ## 2.6 Constraints
@@ -381,7 +381,7 @@ public class LoginServlet extends HttpServlet {
         c.setMaxAge(req.getParameter("remember") != null ? 7 * 24 * 60 * 60 : 0);
         resp.addCookie(c);
 
-        resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/dashboard"));
+        resp.sendRedirect(req.getContextPath() + "/dashboard");
     }
 }
 ```
@@ -390,7 +390,7 @@ public class LoginServlet extends HttpServlet {
 
 # 7. JSP Development
 
-All views are JSP pages that use **Expression Language (EL)** and the **Jakarta Standard Tag Library (JSTL)** (`<c:forEach>`, `<c:if>`, `<c:choose>`, `<c:out>`, `<c:url>`). No Java scriptlets are used, so the pages contain presentation only. The pages are stored under `WEB-INF/views/` and are reached only through servlets.
+All views are JSP pages use **JSP Action (jsp:include)** and Java **scriptlets**, so the pages contain presentation only. The pages are stored under `WEB-INF/views/` and are reached only through servlets.
 
 | JSP | Used for | Reached through |
 |---|---|---|
@@ -409,7 +409,7 @@ All views are JSP pages that use **Expression Language (EL)** and the **Jakarta 
 - **Menu by role:** the menu uses `<c:if test="${sessionScope.loggedUser.role == 'ADMIN'}">` to show the "Add course" link only to admins.
 - **Output escaping:** user-supplied text (names, course titles) is printed with `<c:out>` so that HTML characters are escaped.
 - **No unnecessary sessions:** the public pages (`login.jsp`, `register.jsp`, `error.jsp`) declare `<%@ page session="false" %>`. By default a JSP creates a session when it is first requested. With `session="false"`, a session is only created when the user logs in successfully.
-- **Links and forms with `<c:url>`:** links and form actions use `<c:url value="/courses" />`. This adds the context path and, when the browser does not accept cookies, the session ID in the URL (see Section 9).
+- **Links and forms:** links and form actions use `<%= request.getContextPath() %>/...` to include the context path. Session tracking relies on cookies only (see Section 9).
 
 ---
 
@@ -492,9 +492,9 @@ When a session is created, the container generates a unique ID and sends it to t
 
 On the login page, `LoginServlet.doGet()` reads `request.getCookies()`, finds `rememberedUser` and puts the value in a request attribute, which `login.jsp` shows in the username field. This shows both reading and writing cookies in code, in addition to the container's automatic session cookie.
 
-## 9.4 URL Rewriting (Fallback)
+## 9.4 Session Tracking (Cookies Only)
 
-If a browser has cookies disabled, the container can place the session ID in the URL (`;jsessionid=...`). This happens automatically for URLs passed through `<c:url>` in JSP and `response.encodeURL()` / `encodeRedirectURL()` in servlets. The application uses these methods for its links, forms and redirects, but its main mechanism and testing focus on cookies.
+The application tracks sessions exclusively through cookies (`<tracking-mode>COOKIE</tracking-mode>` in `web.xml`). When a session is created, the container generates a unique ID and sends it to the browser in a cookie named **`JSESSIONID`**. The browser returns this cookie with every later request, and the container uses it to find the matching `HttpSession` on the server.
 
 ---
 

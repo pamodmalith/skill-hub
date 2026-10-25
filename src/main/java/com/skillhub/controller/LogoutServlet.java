@@ -18,6 +18,6 @@ public class LogoutServlet extends HttpServlet {
             session.invalidate();
         }
 
-        resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/login?msg=loggedout"));
+        resp.sendRedirect(req.getContextPath() + "/login?msg=loggedout");
     }
 }

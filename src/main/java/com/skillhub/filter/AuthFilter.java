@@ -37,7 +37,7 @@ public class AuthFilter implements Filter {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("loggedUser") == null) {
             // Not logged in - redirect to login
-            resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/login"));
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 

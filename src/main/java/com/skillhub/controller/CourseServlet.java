@@ -76,7 +76,7 @@ public class CourseServlet extends HttpServlet {
             DataStore store = (DataStore) getServletContext().getAttribute("dataStore");
             store.addCourse(title.trim(), category.trim(), trainerUsername.trim());
 
-            resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/courses?msg=added"));
+            resp.sendRedirect(req.getContextPath() + "/courses?msg=added");
         }
     }
 }

@@ -69,6 +69,6 @@ public class LoginServlet extends HttpServlet {
         c.setMaxAge(remember != null ? 60 * 60 * 24 * 7 : 0);
         resp.addCookie(c);
 
-        resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/dashboard"));
+        resp.sendRedirect(req.getContextPath() + "/dashboard");
     }
 }

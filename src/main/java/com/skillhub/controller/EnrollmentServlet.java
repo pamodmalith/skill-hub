@@ -19,13 +19,13 @@ public class EnrollmentServlet extends HttpServlet {
 
         HttpSession session = req.getSession(false);
         if (session == null) {
-            resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/login"));
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
         String courseIdParam = req.getParameter("courseId");
         if (courseIdParam == null || courseIdParam.trim().isEmpty()) {
-            resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/dashboard?msg=error"));
+            resp.sendRedirect(req.getContextPath() + "/dashboard?msg=error");
             return;
         }
 
@@ -33,7 +33,7 @@ public class EnrollmentServlet extends HttpServlet {
         try {
             courseId = Integer.parseInt(courseIdParam);
         } catch (NumberFormatException e) {
-            resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/dashboard?msg=error"));
+            resp.sendRedirect(req.getContextPath() + "/dashboard?msg=error");
             return;
         }
 
@@ -43,9 +43,9 @@ public class EnrollmentServlet extends HttpServlet {
         boolean success = store.enrollStudent(username, courseId);
 
         if (success) {
-            resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/dashboard?msg=enrolled"));
+            resp.sendRedirect(req.getContextPath() + "/dashboard?msg=enrolled");
         } else {
-            resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/dashboard?msg=duplicate"));
+            resp.sendRedirect(req.getContextPath() + "/dashboard?msg=duplicate");
         }
     }
 }

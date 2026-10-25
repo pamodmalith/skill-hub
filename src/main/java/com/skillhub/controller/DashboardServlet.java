@@ -26,13 +26,13 @@ public class DashboardServlet extends HttpServlet {
 
         HttpSession session = req.getSession(false);
         if (session == null) {
-            resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/login"));
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
         User user = (User) session.getAttribute("loggedUser");
         if (user == null) {
-            resp.sendRedirect(resp.encodeRedirectURL(req.getContextPath() + "/login"));
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
