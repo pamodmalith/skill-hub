@@ -140,7 +140,7 @@ The application follows a simple **Model–View–Controller (MVC)** pattern, ad
 | Layer | Components | Responsibility |
 |---|---|---|
 | **Model** | `User`, `Course`, `Enrollment`, `Role`, `DataStore` | Represent the data and hold it in thread-safe collections (`ConcurrentHashMap`, `CopyOnWriteArrayList`). |
-| **View** | 7 JSP pages and one shared menu fragment, placed under `WEB-INF/views/` | Display data using Expression Language (EL) and JSTL. No Java scriptlets are used. |
+| **View** | 7 JSP pages and one shared menu fragment, placed under `WEB-INF/views/` | Display data using Java scriptlets (`<%= %>`, `<% %>`) and Expression Language. The shared menu is included with `<jsp:include>`. |
 | **Controller** | 7 servlets | Receive requests, validate input, use the model, manage the session and forward to a view. |
 | **Cross-cutting** | `AuthFilter`, `AppContextListener`, `SessionListener` | Security checks and application/session life-cycle events. |
 
@@ -406,8 +406,8 @@ All views are JSP pages use **JSP Action (jsp:include)** and Java **scriptlets**
 ## 7.1 Key Points
 
 - **Shared menu:** the private pages include `menu.jsp` with `<jsp:include page="menu.jsp" />`. This uses `RequestDispatcher.include()` internally, so the menu is written once.
-- **Menu by role:** the menu uses `<c:if test="${sessionScope.loggedUser.role == 'ADMIN'}">` to show the "Add course" link only to admins.
-- **Output escaping:** user-supplied text (names, course titles) is printed with `<c:out>` so that HTML characters are escaped.
+- **Menu by role:** the menu uses a Java scriptlet (`<% if (loggedUser != null && loggedUser.getRole() == Role.ADMIN) { %>`) to show the "Add course" link only to admins.
+- **Output:** user-supplied text (names, course titles) is printed with `<%= ... %>` expression tags.
 - **No unnecessary sessions:** the public pages (`login.jsp`, `register.jsp`, `error.jsp`) declare `<%@ page session="false" %>`. By default a JSP creates a session when it is first requested. With `session="false"`, a session is only created when the user logs in successfully.
 - **Links and forms:** links and form actions use `<%= request.getContextPath() %>/...` to include the context path. Session tracking relies on cookies only (see Section 9).
 
@@ -458,7 +458,7 @@ Both listeners are registered in `web.xml`.
 
 | Scope | Lifetime | What the application stores there |
 |---|---|---|
-| **Page** | One JSP page | Loop variables and temporary values set with JSTL (`<c:forEach var="course" …>`). |
+| **Page** | One JSP page | Loop variables and temporary values declared in Java scriptlets (`<% for (Course course : ...) { %>`). |
 | **Request** | One request (including forwards) | Data sent from a servlet to a JSP: course lists, error messages, the remembered username. |
 | **Session** | One user's visit | `loggedUser` (the `User` object). |
 | **Application** | Until the application stops | `dataStore`, `activeSessions`. |
@@ -478,7 +478,7 @@ When a session is created, the container generates a unique ID and sends it to t
 | Stage | Implementation |
 |---|---|
 | **Creation** | After successful credential check, `LoginServlet` calls `request.getSession(true)` and stores the `User` object as `loggedUser`. |
-| **Use** | `AuthFilter` checks `loggedUser` on every protected request. Servlets and JSPs read it (`sessionScope.loggedUser`) to show role-specific content. |
+| **Use** | `AuthFilter` checks `loggedUser` on every protected request. Servlets and JSPs read it from the session in scriptlets (`User loggedUser = (User) session.getAttribute("loggedUser");`) to show role-specific content. |
 | **Timeout** | `<session-timeout>30</session-timeout>` in `web.xml` ends the session after 30 minutes of inactivity. |
 | **Termination** | `LogoutServlet` calls `session.invalidate()`. The old session ID becomes invalid, so the Back button cannot reopen protected pages. |
 | **Monitoring** | `SessionListener` counts created and destroyed sessions. |
@@ -525,7 +525,7 @@ The Trainer role has no URL that changes data, so it is view-only.
 - **JSPs hidden in `WEB-INF`:** pages cannot be requested directly; they can only be reached through servlets, which the filter protects.
 - **Server-side session invalidation** on logout, plus a 30-minute inactivity timeout.
 - **HttpOnly cookies:** the session cookie and the `rememberedUser` cookie are marked HttpOnly so JavaScript cannot read them.
-- **Output escaping:** user text is displayed with `<c:out>`.
+- **Output:** user text is displayed with `<%= ... %>` expression tags.
 - **Input validation:** servlets reject empty fields and duplicate usernames, and `EnrollmentServlet` rejects unknown course IDs and duplicate enrolments.
 - **Error pages:** 403, 404 and 500 pages show a friendly message and do not reveal technical details.
 
@@ -627,7 +627,7 @@ The tests below were run on the deployed application. The *Actual Result* and *P
 
 The SkillHub Training Portal meets the scenario's requirements with a Java EE (Jakarta EE 10) web application that runs on GlassFish 7 without any database. It provides registration, login and logout for students, trainers and administrators, and a role-based dashboard. Students can browse and enrol in courses, trainers can view their courses and students, and admins can add courses and see a system overview.
 
-The project shows the main web component concepts: seven servlets, JSP pages with EL and JSTL, `RequestDispatcher` forwarding and including, the `ServletContext` for shared data, an authentication and authorisation filter, two listeners, attribute scopes, and session tracking with cookies. Configuration is split between `web.xml` and annotations. Its simple MVC structure keeps the code easy to understand and gives a clear base for the improvements listed in Section 12, especially a database and password hashing.
+The project shows the main web component concepts: seven servlets, JSP pages with EL and Java scriptlets, `RequestDispatcher` forwarding and including, the `ServletContext` for shared data, an authentication and authorisation filter, two listeners, attribute scopes, and session tracking with cookies. Configuration is split between `web.xml` and annotations. Its simple MVC structure keeps the code easy to understand and gives a clear base for the improvements listed in Section 12, especially a database and password hashing.
 
 ---
 
