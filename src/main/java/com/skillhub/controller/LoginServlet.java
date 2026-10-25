@@ -20,18 +20,23 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        // Check for remember username cookie
-        String rememberedUser = "";
+        HttpSession session = req.getSession(false);
+        if (session != null && session.getAttribute("loggedUser") != null) {
+            resp.sendRedirect(req.getContextPath() + "/dashboard");
+            return;
+        }
+
+        String savedUsername = "";
         Cookie[] cookies = req.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("rememberedUser".equals(cookie.getName())) {
-                    rememberedUser = cookie.getValue();
+                    savedUsername = cookie.getValue();
                     break;
                 }
             }
         }
-        req.setAttribute("rememberedUser", rememberedUser);
+        req.setAttribute("savedUsername", savedUsername);
 
         req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
     }
@@ -44,17 +49,20 @@ public class LoginServlet extends HttpServlet {
         String password = req.getParameter("password");
         String remember = req.getParameter("remember");
 
-        DataStore store = (DataStore) getServletContext().getAttribute("dataStore");
-        if (store == null) {
-            req.setAttribute("error", "System not ready. Please try again in a moment.");
+        if (username == null || username.trim().isEmpty()
+                || password == null || password.trim().isEmpty()) {
+            req.setAttribute("error", "Username and password are required.");
+            req.setAttribute("savedUsername", username == null ? "" : username);
             req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
             return;
         }
+
+        DataStore store = (DataStore) getServletContext().getAttribute("dataStore");
         User user = store.authenticate(username, password);
 
         if (user == null) {
             req.setAttribute("error", "Invalid username or password.");
-            req.setAttribute("rememberedUser", username);
+            req.setAttribute("savedUsername", username);
             req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
             return;
         }
@@ -62,11 +70,10 @@ public class LoginServlet extends HttpServlet {
         HttpSession session = req.getSession(true);
         session.setAttribute("loggedUser", user);
 
-        // Remember-username cookie
         Cookie c = new Cookie("rememberedUser", user.getUsername());
         c.setPath(req.getContextPath());
         c.setHttpOnly(true);
-        c.setMaxAge(remember != null ? 60 * 60 * 24 * 7 : 0);
+        c.setMaxAge(remember != null ? 7 * 24 * 60 * 60 : 0);
         resp.addCookie(c);
 
         resp.sendRedirect(req.getContextPath() + "/dashboard");

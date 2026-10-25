@@ -31,7 +31,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- Servlets declared in XML (the other five use @WebServlet) -->
+    <!-- Servlets declared in XML (the other seven use @WebServlet) -->
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>com.skillhub.controller.LogoutServlet</servlet-class>
@@ -50,12 +50,13 @@
         <url-pattern>/profile</url-pattern>
     </servlet-mapping>
 
-    <!-- Session configuration -->
+    <!-- Session configuration: 30 min timeout, HttpOnly cookie, cookie-only tracking -->
     <session-config>
         <session-timeout>30</session-timeout>
         <cookie-config>
             <http-only>true</http-only>
         </cookie-config>
+        <tracking-mode>COOKIE</tracking-mode>
     </session-config>
 
     <welcome-file-list>

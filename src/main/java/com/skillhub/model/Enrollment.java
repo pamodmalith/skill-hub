@@ -1,19 +1,16 @@
 package com.skillhub.model;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-public class Enrollment implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class Enrollment {
     private final String studentUsername;
     private final int courseId;
-    private final LocalDateTime enrolledAt;
+    private final LocalDate enrolledOn;
 
-    public Enrollment(String studentUsername, int courseId) {
+    public Enrollment(String studentUsername, int courseId, LocalDate enrolledOn) {
         this.studentUsername = studentUsername;
         this.courseId = courseId;
-        this.enrolledAt = LocalDateTime.now();
+        this.enrolledOn = enrolledOn;
     }
 
     public String getStudentUsername() {
@@ -24,29 +21,7 @@ public class Enrollment implements Serializable {
         return courseId;
     }
 
-    public LocalDateTime getEnrolledAt() {
-        return enrolledAt;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Enrollment that = (Enrollment) o;
-        return courseId == that.courseId && studentUsername.equals(that.studentUsername);
-    }
-
-    @Override
-    public int hashCode() {
-        return studentUsername.hashCode() * 31 + courseId;
-    }
-
-    @Override
-    public String toString() {
-        return "Enrollment{" +
-                "studentUsername='" + studentUsername + '\'' +
-                ", courseId=" + courseId +
-                ", enrolledAt=" + enrolledAt +
-                '}';
+    public LocalDate getEnrolledOn() {
+        return enrolledOn;
     }
 }

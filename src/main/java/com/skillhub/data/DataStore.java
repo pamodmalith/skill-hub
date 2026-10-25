@@ -1,25 +1,35 @@
 package com.skillhub.data;
 
+import com.skillhub.model.AttendanceRecord;
+import com.skillhub.model.AttendanceStatus;
 import com.skillhub.model.Course;
 import com.skillhub.model.Enrollment;
 import com.skillhub.model.Role;
 import com.skillhub.model.User;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class DataStore {
-    private final Map<String, User> users = new ConcurrentHashMap<>();
-    private final Map<Integer, Course> courses = new ConcurrentHashMap<>();
-    private final List<Enrollment> enrollments = new ArrayList<>();
-    private int nextCourseId = 1;
-
-    public DataStore() {
-        // Sample data will be loaded by AppContextListener
-    }
+    private final ConcurrentHashMap<String, User> users = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, Course> courses = new ConcurrentHashMap<>();
+    private final CopyOnWriteArrayList<Enrollment> enrollments = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<AttendanceRecord> attendance = new CopyOnWriteArrayList<>();
+    private final AtomicInteger courseIdCounter = new AtomicInteger(0);
 
     // User methods
-    public synchronized User authenticate(String username, String password) {
+    public boolean addUser(User u) {
+        return users.putIfAbsent(u.getUsername(), u) == null;
+    }
+
+    public User authenticate(String username, String password) {
+        if (username == null || password == null) {
+            return null;
+        }
         User user = users.get(username);
         if (user != null && user.getPassword().equals(password)) {
             return user;
@@ -27,124 +37,146 @@ public class DataStore {
         return null;
     }
 
-    public synchronized boolean usernameExists(String username) {
-        return users.containsKey(username);
-    }
-
-    public synchronized void addUser(User user) {
-        users.put(user.getUsername(), user);
-    }
-
     public User getUser(String username) {
+        if (username == null) {
+            return null;
+        }
         return users.get(username);
     }
 
-    public Collection<User> getAllUsers() {
-        return Collections.unmodifiableCollection(users.values());
-    }
-
-    public List<User> getUsersByRole(Role role) {
+    public List<User> getUsersByRole(Role r) {
         List<User> result = new ArrayList<>();
         for (User user : users.values()) {
-            if (user.getRole() == role) {
+            if (user.getRole() == r) {
                 result.add(user);
             }
         }
-        return Collections.unmodifiableList(result);
-    }
-
-    public int getUserCount() {
-        return users.size();
+        result.sort(Comparator.comparing(User::getFullName, String.CASE_INSENSITIVE_ORDER));
+        return result;
     }
 
     // Course methods
-    public synchronized int addCourse(String title, String category, String trainerUsername) {
-        int id = nextCourseId++;
-        Course course = new Course(id, title, category, trainerUsername);
+    public Course addCourse(String title, String category, String description, String trainerUsername) {
+        int id = courseIdCounter.incrementAndGet();
+        Course course = new Course(id, title, category, description, trainerUsername);
         courses.put(id, course);
-        return id;
+        return course;
     }
 
     public Course getCourse(int id) {
         return courses.get(id);
     }
 
-    public Collection<Course> getAllCourses() {
-        return Collections.unmodifiableCollection(courses.values());
+    public List<Course> getAllCourses() {
+        List<Course> result = new ArrayList<>(courses.values());
+        result.sort(Comparator.comparingInt(Course::getId));
+        return result;
     }
 
-    public List<Course> getCoursesByTrainer(String trainerUsername) {
+    public List<Course> getCoursesByTrainer(String username) {
         List<Course> result = new ArrayList<>();
         for (Course course : courses.values()) {
-            if (course.getTrainerUsername().equals(trainerUsername)) {
+            if (course.getTrainerUsername().equals(username)) {
                 result.add(course);
             }
         }
-        return Collections.unmodifiableList(result);
-    }
-
-    public int getCourseCount() {
-        return courses.size();
+        result.sort(Comparator.comparingInt(Course::getId));
+        return result;
     }
 
     // Enrollment methods
-    public synchronized boolean enrollStudent(String studentUsername, int courseId) {
-        Course course = courses.get(courseId);
-        if (course == null) {
+    public synchronized boolean enroll(String username, int courseId) {
+        if (isEnrolled(username, courseId)) {
             return false;
         }
-
-        // Check if already enrolled
-        for (Enrollment e : enrollments) {
-            if (e.getStudentUsername().equals(studentUsername) && e.getCourseId() == courseId) {
-                return false; // Already enrolled
-            }
-        }
-
-        enrollments.add(new Enrollment(studentUsername, courseId));
+        enrollments.add(new Enrollment(username, courseId, LocalDate.now()));
         return true;
     }
 
-    public List<Enrollment> getEnrollmentsByStudent(String studentUsername) {
-        List<Enrollment> result = new ArrayList<>();
+    public boolean isEnrolled(String username, int courseId) {
         for (Enrollment e : enrollments) {
-            if (e.getStudentUsername().equals(studentUsername)) {
-                result.add(e);
+            if (e.getStudentUsername().equals(username) && e.getCourseId() == courseId) {
+                return true;
             }
         }
-        return Collections.unmodifiableList(result);
+        return false;
     }
 
-    public List<Enrollment> getEnrollmentsByCourse(int courseId) {
-        List<Enrollment> result = new ArrayList<>();
+    public List<Course> getCoursesOfStudent(String username) {
+        List<Course> result = new ArrayList<>();
+        for (Enrollment e : enrollments) {
+            if (e.getStudentUsername().equals(username)) {
+                Course c = courses.get(e.getCourseId());
+                if (c != null) {
+                    result.add(c);
+                }
+            }
+        }
+        result.sort(Comparator.comparingInt(Course::getId));
+        return result;
+    }
+
+    public List<User> getStudentsInCourse(int courseId) {
+        List<User> result = new ArrayList<>();
         for (Enrollment e : enrollments) {
             if (e.getCourseId() == courseId) {
-                result.add(e);
+                User u = users.get(e.getStudentUsername());
+                if (u != null) {
+                    result.add(u);
+                }
             }
         }
-        return Collections.unmodifiableList(result);
+        result.sort(Comparator.comparing(User::getFullName, String.CASE_INSENSITIVE_ORDER));
+        return result;
     }
 
-    public int getEnrollmentCount() {
+    public int countEnrollments() {
         return enrollments.size();
     }
 
-    // Initialize sample data
-    public void loadSampleData() {
-        // Admin
-        addUser(new User("admin", "admin123", "System Administrator", "admin@skillhub.com", Role.ADMIN));
+    // Attendance methods
+    public synchronized void saveAttendance(int courseId, LocalDate date, Map<String, AttendanceStatus> statuses) {
+        // Remove existing records for this course and date
+        attendance.removeIf(r -> r.getCourseId() == courseId && r.getDate().equals(date));
+        // Add new records
+        for (Map.Entry<String, AttendanceStatus> entry : statuses.entrySet()) {
+            attendance.add(new AttendanceRecord(courseId, entry.getKey(), date, entry.getValue()));
+        }
+    }
 
-        // Trainers
-        addUser(new User("trainer1", "trainer123", "Kamal Silva", "trainer1@skillhub.com", Role.TRAINER));
-        addUser(new User("trainer2", "trainer123", "Nimali Fernando", "trainer2@skillhub.com", Role.TRAINER));
+    public Map<String, AttendanceStatus> getAttendance(int courseId, LocalDate date) {
+        Map<String, AttendanceStatus> result = new HashMap<>();
+        for (AttendanceRecord r : attendance) {
+            if (r.getCourseId() == courseId && r.getDate().equals(date)) {
+                result.put(r.getStudentUsername(), r.getStatus());
+            }
+        }
+        return result;
+    }
 
-        // Student
-        addUser(new User("student1", "student123", "Saman Kumara", "student1@skillhub.com", Role.STUDENT));
+    public List<LocalDate> getSessionDates(int courseId) {
+        Set<LocalDate> dates = new HashSet<>();
+        for (AttendanceRecord r : attendance) {
+            if (r.getCourseId() == courseId) {
+                dates.add(r.getDate());
+            }
+        }
+        List<LocalDate> result = new ArrayList<>(dates);
+        result.sort(Comparator.reverseOrder()); // newest first
+        return result;
+    }
 
-        // Courses
-        addCourse("Java Web Development", "Technology", "trainer1");
-        addCourse("Python Fundamentals", "Technology", "trainer2");
-        addCourse("Business Communication", "Professional Development", "trainer2");
-        addCourse("Project Management Essentials", "Business", "trainer1");
+    public int[] getAttendanceSummary(String username, int courseId) {
+        int present = 0;
+        int total = 0;
+        for (AttendanceRecord r : attendance) {
+            if (r.getCourseId() == courseId && r.getStudentUsername().equals(username)) {
+                total++;
+                if (r.getStatus() == AttendanceStatus.PRESENT) {
+                    present++;
+                }
+            }
+        }
+        return new int[]{present, total};
     }
 }

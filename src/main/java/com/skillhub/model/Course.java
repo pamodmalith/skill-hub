@@ -1,19 +1,17 @@
 package com.skillhub.model;
 
-import java.io.Serializable;
-
-public class Course implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class Course {
     private final int id;
     private final String title;
     private final String category;
+    private final String description;
     private final String trainerUsername;
 
-    public Course(int id, String title, String category, String trainerUsername) {
+    public Course(int id, String title, String category, String description, String trainerUsername) {
         this.id = id;
         this.title = title;
         this.category = category;
+        this.description = description;
         this.trainerUsername = trainerUsername;
     }
 
@@ -29,17 +27,11 @@ public class Course implements Serializable {
         return category;
     }
 
-    public String getTrainerUsername() {
-        return trainerUsername;
+    public String getDescription() {
+        return description;
     }
 
-    @Override
-    public String toString() {
-        return "Course{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", category='" + category + '\'' +
-                ", trainerUsername='" + trainerUsername + '\'' +
-                '}';
+    public String getTrainerUsername() {
+        return trainerUsername;
     }
 }

@@ -21,58 +21,44 @@ public class AuthFilter implements Filter {
 
         String path = req.getRequestURI().substring(req.getContextPath().length());
 
-        // Public paths that don't require authentication
-        if (isPublicPath(path)) {
+        if (isPublic(path)) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Unknown URLs should show 404 instead of redirecting to login
-        if (!isProtectedPath(path)) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-
-        // Check session
         HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("loggedUser") == null) {
-            // Not logged in - redirect to login
+        User user = (session == null) ? null : (User) session.getAttribute("loggedUser");
+        if (user == null) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
-        User user = (User) session.getAttribute("loggedUser");
-
-        // Role-based authorization
         if (path.startsWith("/admin/") && user.getRole() != Role.ADMIN) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
-        if ("/enroll".equals(path) && user.getRole() != Role.STUDENT) {
+        if (path.equals("/enroll") && user.getRole() != Role.STUDENT) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
-        // Authorized - continue
+        if (path.equals("/attendance") && user.getRole() == Role.STUDENT) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         chain.doFilter(request, response);
     }
 
-    private boolean isPublicPath(String path) {
-        return path.equals("/")
+    private boolean isPublic(String path) {
+        return path.equals("")
+                || path.equals("/")
                 || path.equals("/index.jsp")
                 || path.equals("/login")
                 || path.equals("/register")
+                || path.equals("/favicon.ico")
                 || path.startsWith("/css/")
-                || path.equals("/favicon.ico");
-    }
-
-    private boolean isProtectedPath(String path) {
-        return path.equals("/dashboard")
-                || path.equals("/courses")
-                || path.equals("/profile")
-                || path.equals("/logout")
-                || path.equals("/enroll")
-                || path.equals("/admin/add-course");
+                || path.startsWith("/js/");
     }
 }

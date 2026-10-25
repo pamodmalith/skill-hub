@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 public class ProfileServlet extends HttpServlet {
@@ -18,6 +19,9 @@ public class ProfileServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
+
+        String academyName = getServletContext().getInitParameter("academyName");
+        req.setAttribute("academyName", academyName);
 
         req.getRequestDispatcher("/WEB-INF/views/profile.jsp").forward(req, resp);
     }
