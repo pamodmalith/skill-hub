@@ -438,10 +438,11 @@ There is one `ServletContext` per web application, shared by all users. The appl
 `AuthFilter` implements `jakarta.servlet.Filter` and is mapped to `/*` in `web.xml`. For each request it:
 
 1. Works out the requested path (request URI without the context path).
-2. Lets public paths through (`/`, `/index.jsp`, `/login`, `/register`, `/css/...`).
-3. Otherwise gets the session with `request.getSession(false)` (without creating one) and checks that it contains `loggedUser`. If not, it redirects to `/login`.
-4. Checks the role for restricted paths: `/admin/*` must be an `ADMIN`, and `/enroll` must be a `STUDENT`. If not, it sends HTTP 403.
-5. Otherwise calls `chain.doFilter()` to continue.
+2. Lets public paths through (`/`, `/index.jsp`, `/login`, `/register`, `/css/...`, `/favicon.ico`).
+3. Unknown URLs that are not protected return HTTP 404.
+4. Otherwise gets the session with `request.getSession(false)` (without creating one) and checks that it contains `loggedUser`. If not, it redirects to `/login`.
+5. Checks the role for restricted paths: `/admin/*` must be an `ADMIN`, and `/enroll` must be a `STUDENT`. If not, it sends HTTP 403.
+6. Otherwise calls `chain.doFilter()` to continue.
 
 This is a *default-deny* design: anything not on the public list needs a login. By default, a filter only applies to direct client requests, so forwards to the JSP files in `WEB-INF/views/` are not filtered a second time.
 
