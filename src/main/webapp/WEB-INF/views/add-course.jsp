@@ -8,30 +8,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Add Course - <%= HtmlUtil.escape(application.getInitParameter("academyName")) %></title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/bootstrap.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
-<body class="bg-light">
+<body>
 <jsp:include page="menu.jsp"/>
 
-<main class="container py-4">
+<main class="container-lg py-4 px-3">
     <div class="mb-4">
         <h1 class="h3 fw-bold mb-1">Add New Course</h1>
-        <p class="text-muted">Create a new training course and assign a trainer</p>
+        <p class="text-muted mb-0">Create a new training course and assign a trainer</p>
     </div>
 
     <%
         if (request.getAttribute("error") != null) {
     %>
-    <div class="alert alert-error"><%= HtmlUtil.escape((String) request.getAttribute("error")) %></div>
+    <div class="alert alert-error" role="alert"><%= HtmlUtil.escape((String) request.getAttribute("error")) %></div>
     <%
         }
     %>
 
     <div class="row">
-        <div class="col-12 col-md-7 col-lg-6">
-            <div class="card shadow-sm border-0">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header">Course Details</div>
                 <div class="card-body p-4">
                     <form method="post" action="<%= request.getContextPath() %>/admin/add-course">
                         <div class="form-group">
@@ -46,7 +48,7 @@
                             <input type="text" id="category" name="category" class="form-control"
                                    value="<%= HtmlUtil.escape((String) request.getAttribute("formCategory")) %>"
                                    required maxlength="50"
-                                   placeholder="e.g., Technology, Business, Professional Development">
+                                   placeholder="e.g., Technology, Business">
                         </div>
 
                         <div class="form-group">
@@ -74,13 +76,13 @@
                                 <% } %>
                             </select>
                             <% if (trainers == null || trainers.isEmpty()) { %>
-                            <div class="form-text text-danger">Add a trainer first</div>
+                            <div class="form-text text-danger mt-1">Add a trainer first before creating a course.</div>
                             <% } %>
                         </div>
 
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">Create Course</button>
-                            <a href="<%= request.getContextPath() %>/courses" class="btn btn-secondary">Cancel</a>
+                            <a href="<%= request.getContextPath() %>/courses" class="btn btn-outline-secondary">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -89,10 +91,12 @@
     </div>
 </main>
 
-<footer class="footer">
-    <div class="container text-center text-muted small">
+<footer class="sh-footer mt-4">
+    <div class="container-lg text-center">
         &copy; 2026 <%= HtmlUtil.escape(application.getInitParameter("academyName")) %>. All rights reserved.
     </div>
 </footer>
+
+<script src="<%= request.getContextPath() %>/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -9,39 +9,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Enrol Student - <%= HtmlUtil.escape(application.getInitParameter("academyName")) %></title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/bootstrap.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
-<body class="bg-light">
+<body>
 <jsp:include page="menu.jsp"/>
 
-<main class="container py-4">
+<main class="container-lg py-4 px-3">
     <div class="mb-4">
         <h1 class="h3 fw-bold mb-1">Enrol Student</h1>
-        <p class="text-muted">Enrol a student in a course</p>
+        <p class="text-muted mb-0">Enrol a student in a course</p>
     </div>
 
     <%
         String msg = request.getParameter("msg");
         if ("enrolledByAdmin".equals(msg)) {
     %>
-    <div class="alert alert-success">Student enrolled successfully.</div>
+    <div class="alert alert-success" role="alert">Student enrolled successfully.</div>
     <%
         } else if ("alreadyEnrolled".equals(msg)) {
     %>
-    <div class="alert alert-error">Already enrolled in that course.</div>
+    <div class="alert alert-error" role="alert">Already enrolled in that course.</div>
     <%
         } else if ("invalid".equals(msg)) {
     %>
-    <div class="alert alert-error">Invalid student or course.</div>
+    <div class="alert alert-error" role="alert">Invalid student or course.</div>
     <%
         }
     %>
 
     <div class="row">
-        <div class="col-12 col-md-7 col-lg-6">
-            <div class="card shadow-sm border-0">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header">Enrolment Details</div>
                 <div class="card-body p-4">
                     <form method="post" action="<%= request.getContextPath() %>/admin/enroll">
                         <div class="form-group">
@@ -72,9 +74,9 @@
                             </select>
                         </div>
 
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">Enrol Student</button>
-                            <a href="<%= request.getContextPath() %>/dashboard" class="btn btn-secondary">Cancel</a>
+                            <a href="<%= request.getContextPath() %>/dashboard" class="btn btn-outline-secondary">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -83,10 +85,12 @@
     </div>
 </main>
 
-<footer class="footer">
-    <div class="container text-center text-muted small">
+<footer class="sh-footer mt-4">
+    <div class="container-lg text-center">
         &copy; 2026 <%= HtmlUtil.escape(application.getInitParameter("academyName")) %>. All rights reserved.
     </div>
 </footer>
+
+<script src="<%= request.getContextPath() %>/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
