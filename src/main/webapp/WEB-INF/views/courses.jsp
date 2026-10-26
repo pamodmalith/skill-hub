@@ -5,7 +5,7 @@
     List<Course> courses = (List<Course>) request.getAttribute("courses");
     Map<Integer, User> trainerNames = (Map<Integer, User>) request.getAttribute("trainerNames");
     Set<Integer> enrolledIds = (Set<Integer>) request.getAttribute("enrolledIds");
-    Role userRole = (User) session.getAttribute("loggedUser") != null ?
+    Role userRole = session.getAttribute("loggedUser") != null ?
         ((User) session.getAttribute("loggedUser")).getRole() : null;
 %>
 <!DOCTYPE html>
