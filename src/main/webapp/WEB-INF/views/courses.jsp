@@ -57,6 +57,7 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                     <tr>
+                        <th>Id</th>
                         <th>Title</th>
                         <th>Category</th>
                         <th>Description</th>
@@ -70,6 +71,7 @@
                         boolean isEnrolled = enrolledIds != null && enrolledIds.contains(course.getId());
                     %>
                     <tr>
+                        <td class="fw-medium"><%= HtmlUtil.escape(String.valueOf(course.getId())) %></td>
                         <td class="fw-medium"><%= HtmlUtil.escape(course.getTitle()) %></td>
                         <td><span class="badge bg-secondary"><%= HtmlUtil.escape(course.getCategory()) %></span></td>
                         <td class="text-muted small"><%= HtmlUtil.escape(course.getDescription()) %></td>

@@ -23,11 +23,15 @@
     <div class="display-1 fw-bold text-primary mb-3">404</div>
     <h1 class="h3 fw-bold mb-2">Page Not Found</h1>
     <p class="lead text-muted mb-4">The page you are looking for does not exist.</p>
-    <% } else { %>
+    <% } else if (statusCode != null && statusCode == 500){ %>
     <div class="display-1 fw-bold text-primary mb-3">500</div>
     <h1 class="h3 fw-bold mb-2">Server Error</h1>
     <p class="lead text-muted mb-4">Something went wrong on our end. Please try again later.</p>
-    <% } %>
+    <% } else {%>
+    <div class="display-1 fw-bold text-primary mb-3"><%= statusCode%></div>
+    <h1 class="h3 fw-bold mb-2">Error</h1>
+    <p class="lead text-muted mb-4">Something went wrong.</p>
+    <%}%>
     <a href="<%= request.getContextPath() %>/dashboard" class="btn btn-primary px-4">Go to Dashboard</a>
 </main>
 

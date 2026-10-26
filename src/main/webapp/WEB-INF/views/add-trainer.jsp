@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" session="false" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.skillhub.util.HtmlUtil" %>
 <!DOCTYPE html>
 <html lang="en">

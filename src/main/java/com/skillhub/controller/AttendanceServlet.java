@@ -162,7 +162,7 @@ public class AttendanceServlet extends HttpServlet {
         for (User student : students) {
             String paramName = "status_" + student.getUsername();
             String statusParam = req.getParameter(paramName);
-            AttendanceStatus status = AttendanceStatus.PRESENT.equals(AttendanceStatus.valueOf(statusParam))
+            AttendanceStatus status = "PRESENT".equals(statusParam)
                     ? AttendanceStatus.PRESENT
                     : AttendanceStatus.ABSENT;
             statuses.put(student.getUsername(), status);

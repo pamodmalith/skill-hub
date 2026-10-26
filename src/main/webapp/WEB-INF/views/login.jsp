@@ -55,7 +55,6 @@
                 </div>
 
                 <% String rememberedUser = (String) request.getAttribute("savedUsername"); %>
-                <% System.out.println("========>" + rememberedUser);%>
                 <div class="mb-3 form-check">
                     <input type="checkbox" id="remember" name="remember" class="form-check-input"
                         <%= (rememberedUser != null && !rememberedUser.isEmpty()) ? "checked" : "" %>>
