@@ -7,11 +7,11 @@ public class HtmlUtil {
             return "";
         }
         String result = s;
-        result = result.replace("&", "&");
-        result = result.replace("<", "<");
-        result = result.replace(">", ">");
-        result = result.replace("\"", "\u0026quot;");
-        result = result.replace("'", "\u0026#39;");
+        result = result.replace("&", "&amp;");
+        result = result.replace("<", "&lt;");
+        result = result.replace(">", "&gt;");
+        result = result.replace("\"", "&quot;");
+        result = result.replace("'", "&#x27;");
         return result;
     }
 }
