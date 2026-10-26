@@ -17,10 +17,10 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/bootstrap.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100 bg-light">
 <jsp:include page="menu.jsp"/>
 
-<main class="container-lg py-4 px-3">
+<main class="container py-4 flex-grow-1">
     <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
         <div>
             <h1 class="h3 fw-bold mb-1">Available Courses</h1>
@@ -39,23 +39,23 @@
     <%
         } else if ("alreadyEnrolled".equals(msg)) {
     %>
-    <div class="alert alert-error" role="alert">Already enrolled in that course.</div>
+    <div class="alert alert-danger" role="alert">Already enrolled in that course.</div>
     <%
         } else if ("invalidCourse".equals(msg)) {
     %>
-    <div class="alert alert-error" role="alert">Invalid course.</div>
+    <div class="alert alert-danger" role="alert">Invalid course.</div>
     <%
         }
     %>
 
-    <div class="card">
+    <div class="card shadow-sm border-0">
         <div class="card-body p-0">
             <% if (courses == null || courses.isEmpty()) { %>
             <div class="p-4 text-muted text-center py-5">No courses available at the moment.</div>
             <% } else { %>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead>
+                    <thead class="table-light">
                     <tr>
                         <th>Title</th>
                         <th>Category</th>
@@ -96,8 +96,8 @@
     </div>
 </main>
 
-<footer class="sh-footer mt-4">
-    <div class="container-lg text-center">
+<footer class="bg-primary text-white-50 text-center small py-3 mt-auto">
+    <div class="container text-center">
         &copy; 2026 <%= HtmlUtil.escape(application.getInitParameter("academyName")) %>. All rights reserved.
     </div>
 </footer>

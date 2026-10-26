@@ -5,8 +5,8 @@
     User loggedUser = (User) session.getAttribute("loggedUser");
     Role role = loggedUser != null ? loggedUser.getRole() : null;
 %>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm">
-    <div class="container-lg">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
         <a class="navbar-brand fw-bold" href="<%= request.getContextPath() %>/dashboard">
             <%= HtmlUtil.escape(application.getInitParameter("academyName")) %>
         </a>
@@ -46,11 +46,11 @@
                 <span class="text-white fw-medium small">
                     <%= loggedUser != null ? HtmlUtil.escape(loggedUser.getFullName()) : "" %>
                 </span>
-                <span class="badge bg-light text-primary">
+                <span class="badge rounded-pill text-bg-light">
                     <%= role != null ? role.toString() : "" %>
                 </span>
                 <a href="<%= request.getContextPath() %>/profile" class="btn btn-outline-light btn-sm">Profile</a>
-                <a href="<%= request.getContextPath() %>/logout" class="btn btn-light btn-sm">Logout</a>
+                <a href="<%= request.getContextPath() %>/logout" class="btn btn-outline-light btn-sm">Logout</a>
             </div>
         </div>
     </div>

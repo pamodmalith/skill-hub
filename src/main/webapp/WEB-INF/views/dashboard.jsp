@@ -14,10 +14,10 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/bootstrap.min.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100 bg-light">
 <jsp:include page="menu.jsp"/>
 
-<main class="container-lg py-4 px-3">
+<main class="container py-4 flex-grow-1">
 
     <div class="mb-4">
         <h1 class="h3 fw-bold mb-1">Dashboard</h1>
@@ -49,7 +49,7 @@
     <h2 class="h5 fw-semibold mb-3">My Enrolments</h2>
 
     <% if (myCourses == null || myCourses.isEmpty()) { %>
-    <div class="card">
+    <div class="card shadow-sm border-0">
         <div class="card-body text-center py-5 text-muted">
             <p class="mb-3">You are not enrolled in any course yet.</p>
             <a href="<%= request.getContextPath() %>/courses" class="btn btn-primary">Browse Courses</a>
@@ -62,10 +62,10 @@
             int present = summary != null ? summary[0] : 0;
             int total   = summary != null ? summary[1] : 0;
             int pct     = (total > 0) ? Math.round(100.0f * present / total) : 0;
-            String attendanceClass = (total == 0) ? "" : (pct >= 75 ? "attendance-good" : (pct >= 50 ? "attendance-ok" : "attendance-poor"));
+            String barClass = (pct >= 75) ? "bg-success" : (pct >= 50 ? "bg-warning" : "bg-danger");
         %>
         <div class="col-12 col-md-6 col-xl-4">
-            <div class="card h-100 sh-stat-card">
+            <div class="card shadow-sm border-0 h-100">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h6 class="fw-semibold mb-0"><%= HtmlUtil.escape(course.getTitle()) %></h6>
@@ -77,9 +77,9 @@
                     <p class="small text-muted mb-1">
                         Attendance: <strong><%= present %></strong> of <strong><%= total %></strong> sessions (<strong><%= pct %>%</strong>)
                     </p>
-                    <div class="progress <%= attendanceClass %>" style="height: 8px;" role="progressbar"
+                    <div class="progress" role="progressbar"
                          aria-valuenow="<%= pct %>" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar" style="width: <%= pct %>%"></div>
+                        <div class="progress-bar <%= barClass %>" style="width: <%= pct %>%;"></div>
                     </div>
                     <% } %>
                 </div>
@@ -97,21 +97,21 @@
     <h2 class="h5 fw-semibold mb-3">My Courses</h2>
 
     <% if (myCourses == null || myCourses.isEmpty()) { %>
-    <div class="card">
+    <div class="card shadow-sm border-0">
         <div class="card-body text-center py-5 text-muted">No courses assigned to you.</div>
     </div>
     <% } else {
         for (Course course : myCourses) {
             List<User> students = studentsByCourse != null ? studentsByCourse.get(course.getId()) : null;
     %>
-    <div class="card mb-3">
-        <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card shadow-sm border-0 mb-3">
+        <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
             <div>
-                <span class="fw-semibold"><%= HtmlUtil.escape(course.getTitle()) %></span>
+                <span><%= HtmlUtil.escape(course.getTitle()) %></span>
                 <span class="badge bg-secondary ms-2"><%= HtmlUtil.escape(course.getCategory()) %></span>
             </div>
             <a href="<%= request.getContextPath() %>/attendance?courseId=<%= course.getId() %>"
-               class="btn btn-accent btn-sm">Mark Attendance</a>
+               class="btn btn-success btn-sm">Mark Attendance</a>
         </div>
         <div class="card-body p-0">
             <% if (students == null || students.isEmpty()) { %>
@@ -119,7 +119,7 @@
             <% } else { %>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead>
+                    <thead class="table-light">
                     <tr>
                         <th>Student Name</th>
                         <th>Username</th>
@@ -146,57 +146,57 @@
     <h2 class="h5 fw-semibold mb-3">Academy Overview</h2>
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-4">
-            <div class="card sh-stat-card accent-teal h-100">
+            <div class="card shadow-sm border-0 border-start border-4 border-primary h-100">
                 <div class="card-body py-3 px-4">
-                    <div class="sh-stat-value"><%= request.getAttribute("userCount") %></div>
-                    <div class="sh-stat-label">Total Users</div>
+                    <div class="fs-1 fw-bold text-primary"><%= request.getAttribute("userCount") %></div>
+                    <div class="text-uppercase small text-muted">Total Users</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg-4">
-            <div class="card sh-stat-card accent-green h-100">
+            <div class="card shadow-sm border-0 border-start border-4 border-success h-100">
                 <div class="card-body py-3 px-4">
-                    <div class="sh-stat-value"><%= request.getAttribute("trainerCount") %></div>
-                    <div class="sh-stat-label">Trainers</div>
+                    <div class="fs-1 fw-bold text-success"><%= request.getAttribute("trainerCount") %></div>
+                    <div class="text-uppercase small text-muted">Trainers</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg-4">
-            <div class="card sh-stat-card accent-amber h-100">
+            <div class="card shadow-sm border-0 border-start border-4 border-warning h-100">
                 <div class="card-body py-3 px-4">
-                    <div class="sh-stat-value"><%= request.getAttribute("studentCount") %></div>
-                    <div class="sh-stat-label">Students</div>
+                    <div class="fs-1 fw-bold text-warning"><%= request.getAttribute("studentCount") %></div>
+                    <div class="text-uppercase small text-muted">Students</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg-4">
-            <div class="card sh-stat-card accent-indigo h-100">
+            <div class="card shadow-sm border-0 border-start border-4 border-info h-100">
                 <div class="card-body py-3 px-4">
-                    <div class="sh-stat-value"><%= request.getAttribute("courseCount") %></div>
-                    <div class="sh-stat-label">Courses</div>
+                    <div class="fs-1 fw-bold text-info"><%= request.getAttribute("courseCount") %></div>
+                    <div class="text-uppercase small text-muted">Courses</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg-4">
-            <div class="card sh-stat-card accent-slate h-100">
+            <div class="card shadow-sm border-0 border-start border-4 border-secondary h-100">
                 <div class="card-body py-3 px-4">
-                    <div class="sh-stat-value"><%= request.getAttribute("enrollmentCount") %></div>
-                    <div class="sh-stat-label">Enrolments</div>
+                    <div class="fs-1 fw-bold text-secondary"><%= request.getAttribute("enrollmentCount") %></div>
+                    <div class="text-uppercase small text-muted">Enrolments</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg-4">
-            <div class="card sh-stat-card accent-rose h-100">
+            <div class="card shadow-sm border-0 border-start border-4 border-danger h-100">
                 <div class="card-body py-3 px-4">
-                    <div class="sh-stat-value"><%= request.getAttribute("activeSessions") %></div>
-                    <div class="sh-stat-label">Active Sessions</div>
+                    <div class="fs-1 fw-bold text-danger"><%= request.getAttribute("activeSessions") %></div>
+                    <div class="text-uppercase small text-muted">Active Sessions</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header">Quick Actions</div>
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white fw-semibold">Quick Actions</div>
         <div class="card-body d-flex gap-2 flex-wrap">
             <a href="<%= request.getContextPath() %>/admin/add-trainer" class="btn btn-primary">Add Trainer</a>
             <a href="<%= request.getContextPath() %>/admin/add-course" class="btn btn-primary">Add Course</a>
@@ -209,8 +209,8 @@
 
 </main>
 
-<footer class="sh-footer mt-4">
-    <div class="container-lg text-center">
+<footer class="bg-primary text-white-50 text-center small py-3 mt-auto">
+    <div class="container text-center">
         &copy; 2026 <%= HtmlUtil.escape(application.getInitParameter("academyName")) %>. All rights reserved.
     </div>
 </footer>
